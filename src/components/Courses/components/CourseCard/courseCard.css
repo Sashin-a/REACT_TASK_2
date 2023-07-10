@@ -1,0 +1,16 @@
+.course-card{
+    border: 2px solid grey;
+    border-radius: 10px;
+    margin:2%;
+}
+
+.course-create{
+    border: 2px solid grey;
+    border-radius: 10px;
+    margin:2%;
+}
+
+button
+{
+    margin-bottom: 5%;
+}

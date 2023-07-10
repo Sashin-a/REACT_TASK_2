@@ -1,0 +1,13 @@
+.mb-3{
+margin-top: -20px;
+}
+
+.center-label
+{
+    position: relative;
+    margin-left: 45%;
+    font-weight: bold;
+}
+.center-label-div{
+    margin-bottom:4%;
+}

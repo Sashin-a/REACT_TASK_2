@@ -1,0 +1,35 @@
+/* .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    grid-gap: 20px;
+} */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+
+.course-create
+{
+  border: 2px solid grey;
+  border-radius: 10px;
+  margin:2%;
+}
+
+.add-btn
+{
+  margin-top: -3em;
+  margin-left: 80%;
+
+}
