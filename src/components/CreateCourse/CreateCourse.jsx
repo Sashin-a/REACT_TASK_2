@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Button from '../../common/Button/Button';
 import { convertMinutesToHours as timeConverter } from '../../util';
 import { v4 as uuidv4 } from 'uuid';
+import { useLocation } from 'react-router-dom';
 import './createCourse.css';
 import {
 	BUTTON_LABEL_CREATE_COURSE,
@@ -10,29 +11,24 @@ import {
 	BUTTON_LABEL_ADD_AUTHOR,
 	BUTTON_LABEL_DELETE_AUTHOR,
 } from '../../constants';
+import { useNavigate } from 'react-router-dom';
 export default CreateCourse;
 
-function CreateCourse({ addCourseToList, addAuthorTo, authors }) {
+function CreateCourse({ callbackSaveCourses, callbackSaveAuthors }) {
+	const location = useLocation();
+	const navigate = useNavigate();
 	const [title, setTitle] = useState('');
 	const [description, setDescription] = useState('');
 	const [author, setAuthor] = useState('');
 	const [minutes, setMinutes] = useState(0);
 	const [time, setTime] = useState('00:00');
 	const [selectedAuthorList, setSelectedAuthorList] = useState([]);
-	const [displayAuthorsList, setDisplayAuthorsList] = useState(authors);
-	// const [selectedAuthorList, setSelectedAuthorList] = useState([]);
-
-	// useEffect(() => {
-	// 	// call api or anything
-	// 	let { title, description } = readonlyObj;
-	// 	setTitle(title);
-	// 	setDescription(description);
-	// }, [readonlyObj]);
+	const [displayAuthorsList, setDisplayAuthorsList] = useState(
+		location.state.authors
+	);
 
 	const handleDescriptionChange = (event) => {
-		// if (event.target.value.length >= 10) {
 		setDescription(event.target.value);
-		// }
 	};
 
 	function handleSetAuthorName(event) {
@@ -47,14 +43,15 @@ function CreateCourse({ addCourseToList, addAuthorTo, authors }) {
 		setTime(val);
 	};
 
-	function addAuthor() {
+	function createAuthor() {
+		if (author === '' || author.length === 0) {
+			alert('Invalid Author');
+			return;
+		}
 		let authorObj = { id: uuidv4(), name: author };
 
 		setDisplayAuthorsList([...displayAuthorsList, authorObj]);
 		setAuthor('');
-		// } else {
-		// 	alert('Author already exists');
-		// }
 	}
 
 	function handleDurationEvent(event) {
@@ -66,6 +63,8 @@ function CreateCourse({ addCourseToList, addAuthorTo, authors }) {
 		setDisplayAuthorsList(
 			displayAuthorsList.filter((author) => author.id !== authorObj.id)
 		);
+
+		// console.log(authorObj);
 	}
 
 	function deleteAuthorsFromList(authorObj) {
@@ -76,21 +75,37 @@ function CreateCourse({ addCourseToList, addAuthorTo, authors }) {
 	}
 
 	function createCourse() {
+		if (title != null && title.length < 2) {
+			alert('Invalid Title, Minimum length 2 is expected');
+			return;
+		}
+
+		if (description != null && description.length < 10) {
+			alert('Invalid description, Minimum length 10 is expected');
+			return;
+		}
+
+		if (minutes != null && minutes < 1) {
+			alert('Invalid course duration, Minimum duration expected is 1');
+			return;
+		}
+
 		let courseObj = {
+			id: uuidv4(),
 			title,
 			description,
 			duration: minutes,
 			creationDate: new Date().toDateString(),
 			authors: selectedAuthorList.map((author) => author.id),
 		};
-		console.log(courseObj);
-		console.log(selectedAuthorList);
-		addCourseToList(courseObj);
-		addAuthorTo(selectedAuthorList);
+
+		callbackSaveCourses(courseObj);
+		callbackSaveAuthors(selectedAuthorList);
+		navigate('/courses');
 	}
 
 	return (
-		<div className='mb-3'>
+		<div className='mb-3 course-create'>
 			<div className='container'>
 				<div className='row'>
 					<div className='col-4'>
@@ -131,7 +146,7 @@ function CreateCourse({ addCourseToList, addAuthorTo, authors }) {
 				<div className='row'>
 					<div className='col-6'>
 						<div className='center-label-div'>
-							<label className='center-label'>Add Author</label>
+							<label className='center-label'>{BUTTON_LABEL_ADD_AUTHOR}</label>
 						</div>
 
 						<div className='row'>
@@ -151,7 +166,7 @@ function CreateCourse({ addCourseToList, addAuthorTo, authors }) {
 								<Button
 									buttonText={BUTTON_LABEL_CREATE_AUTHOR}
 									btnLook='btn btn-outline-secondary'
-									onClick={addAuthor}
+									onClick={createAuthor}
 								/>
 							</div>
 						</div>
@@ -192,7 +207,7 @@ function CreateCourse({ addCourseToList, addAuthorTo, authors }) {
 										<Button
 											buttonText={BUTTON_LABEL_ADD_AUTHOR}
 											btnLook='btn btn-outline-warning'
-											onClick={() => addAuthorToList(author)}
+											onClick={addAuthorToList}
 										></Button>
 									</div>
 									<br />

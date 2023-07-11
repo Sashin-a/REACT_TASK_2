@@ -1,57 +1,35 @@
 import CourseCard from './components/CourseCard/CourseCard';
 import SearchBar from './components/SearchBar/SearchBar';
 import Button from '../../common/Button/Button';
-import {
-	BUTTON_LABEL_ADD_COURSE,
-	mockedAuthorsList,
-	mockedCoursesList,
-} from '../../constants';
+import { BUTTON_LABEL_ADD_COURSE } from '../../constants';
 import './courses.css';
 import { useState } from 'react';
-// import { useNavigate } from 'react-router-dom';
-import CreateCourse from '../CreateCourse/CreateCourse';
+import { useNavigate } from 'react-router-dom';
 export default Courses;
 
-function Courses() {
-	// const navigate = useNavigate();
+function Courses({ authors, courses }) {
+	const navigate = useNavigate();
 	const [searchText, setSearchText] = useState('');
-	const [showPopup, setShowPopup] = useState(false);
-	const [authorList, setAuthorList] = useState(mockedAuthorsList);
-	const [courseList, setCourseList] = useState(mockedCoursesList);
 
-	function addCourseToList(obj) {
-		setCourseList([...courseList, obj]);
-	}
-
-	function addAuthorTo(obj) {
-		console.log(obj);
-		let existingAuthNames = authorList.map((x) => x.name);
-		let newAuthors = obj.filter((x) => !existingAuthNames.includes(x.name));
-
-		// obj.filter((newAuth)=>!authorList.includes())
-		if (newAuthors) {
-			setAuthorList([...authorList, ...newAuthors]);
-		}
-	}
 	function getAuthors(course) {
 		let authorNames = [];
 		course.authors.forEach((authorId) => {
-			authorList.forEach((author) => {
+			authors.forEach((author) => {
 				if (author.id === authorId) {
 					authorNames.push(author.name);
 				}
 			});
 		});
-		// console.log('Authors : ', authorNames);
 		return authorNames;
 	}
 	const search = (text) => {
 		setSearchText(text);
 	};
 
-	const togglePopup = () => {
-		setShowPopup(!showPopup);
-		// navigate('/courses/add');
+	const navigateToAddCourse = () => {
+		navigate('/courses/add', {
+			state: { authors },
+		});
 	};
 	return (
 		<>
@@ -64,24 +42,14 @@ function Courses() {
 						<Button
 							buttonText={BUTTON_LABEL_ADD_COURSE}
 							btnLook='btn btn-outline-dark'
-							onClick={togglePopup}
+							onClick={navigateToAddCourse}
 						/>
 					</div>
 				</div>
 			</div>
-			{showPopup ? (
-				<div className='course-create'>
-					<br />
-					<br />
-					<CreateCourse
-						authors={authorList}
-						addCourseToList={addCourseToList}
-						addAuthorTo={addAuthorTo}
-					/>
-				</div>
-			) : null}
+
 			<div className='cards course-create'>
-				{courseList
+				{courses
 					.filter((course) => {
 						return (
 							course.title.toLowerCase().includes(searchText.toLowerCase()) ||
